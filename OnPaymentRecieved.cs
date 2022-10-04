@@ -22,6 +22,7 @@ namespace Azure_Functions
             // Default Route api/functionName, but we can use Route param to configure different Route for fn invocation
             // ILogger write to the logs
             [HttpTrigger(AuthorizationLevel.Function, "post", Route = null)] HttpRequest req,
+            [Queue("orders")] IAsyncCollector<Order> orderQueue,
             ILogger log)
         {
             log.LogInformation("Recieved the Payment");
@@ -29,6 +30,9 @@ namespace Azure_Functions
 
             string requestBody = await new StreamReader(req.Body).ReadToEndAsync();
             var order = JsonConvert.DeserializeObject<Order>(requestBody);
+            
+            // pass the order to queue
+            await orderQueue.AddAsync(order);
 
             log.LogInformation($"Order {order.OrderId} received from {order.Email} for prodcut {order.ProductId}");
 
