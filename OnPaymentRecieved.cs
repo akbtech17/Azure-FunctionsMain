@@ -10,26 +10,27 @@ using Newtonsoft.Json;
 
 namespace Azure_Functions
 {
+    // static class
     public static class OnPaymentRecieved
     {
-        [FunctionName("OnPaymentRecieved")]
+        // static function Run()
+        [FunctionName("OnPaymentRecieved")]  // function name attribute
         public static async Task<IActionResult> Run(
-            [HttpTrigger(AuthorizationLevel.Function, "get", "post", Route = null)] HttpRequest req,
+            // http trigger attribute
+            // authorization level = function - req secret code
+            // which http methods we want to support
+            // Default Route api/functionName, but we can use Route param to configure different Route for fn invocation
+            // ILogger write to the logs
+            [HttpTrigger(AuthorizationLevel.Function, "post", Route = null)] HttpRequest req,
             ILogger log)
         {
-            log.LogInformation("C# HTTP trigger function processed a request.");
+            log.LogInformation("Recieved the Payment");
 
-            string name = req.Query["name"];
 
             string requestBody = await new StreamReader(req.Body).ReadToEndAsync();
             dynamic data = JsonConvert.DeserializeObject(requestBody);
-            name = name ?? data?.name;
 
-            string responseMessage = string.IsNullOrEmpty(name)
-                ? "This HTTP triggered function executed successfully. Pass a name in the query string or in the request body for a personalized response."
-                : $"Hello, {name}. This HTTP triggered function executed successfully.";
-
-            return new OkObjectResult(responseMessage);
+            return new OkObjectResult("Thank you for your purchase");
         }
     }
 }
