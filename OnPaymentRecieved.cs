@@ -28,7 +28,9 @@ namespace Azure_Functions
 
 
             string requestBody = await new StreamReader(req.Body).ReadToEndAsync();
-            dynamic data = JsonConvert.DeserializeObject(requestBody);
+            var order = JsonConvert.DeserializeObject<Order>(requestBody);
+
+            log.LogInformation($"Order {order.OrderId} received from {order.Email} for prodcut {order.ProductId}");
 
             return new OkObjectResult("Thank you for your purchase");
         }
